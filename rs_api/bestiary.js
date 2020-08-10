@@ -151,20 +151,27 @@ var bestiary = {
     ];
 
     for (let i = 0; i < possibleStartingLetters.length; i++) {
-      beasts.push(getBeastsByLetter(possibleStartingLetters[i]));
+      const results = getBeastsByLetter(possibleStartingLetters[i]);
+      for (let j = 0; j < results.length; j++) {
+        if ( Object.getOwnPropertyDescriptors(results)[j] ) {
+          for (let k = 0; k < results[j].length; k++) {
+            beasts.push(results[j][k]);
+          }
+        }
+      }
       await sleep(process.env.API_WAIT_TIME);
     }
 
-    console.log(beasts);
+    console.log(JSON.stringify(beasts));
 
-    for (const beast of beasts) {
-      console.log(JSON.stringify(beast));
-      if (beast.id != undefined) {
-        var beastData = getBeastData(beast.id);
-        Logger.debug(`Gathered beast data: ${beastData}`);
-        await sleep(process.env.API_WAIT_TIME);
-      }
-    }
+    // for (const beast of beasts) {
+    //   console.log(JSON.stringify(beast));
+    //   if (beast.id != undefined) {
+    //     var beastData = getBeastData(beast.id);
+    //     Logger.debug(`Gathered beast data: ${beastData}`);
+    //     await sleep(process.env.API_WAIT_TIME);
+    //   }
+    // }
   },
 };
 
