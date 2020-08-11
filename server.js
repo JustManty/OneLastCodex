@@ -1,20 +1,16 @@
 const Express = require('express');
 const DotEnv = require('dotenv');
 const Morgan = require('morgan');
-const Colors = require('colors/safe');
-const Chron = require('chron');
 const Logger = require('./utils/logger.js');
+const Config = require('./config/GlobalConfig.js')
 const { refreshAllBeastData } = require('./rs_api/bestiary.js');
 
-// Load env variables
+// Load environment variables
 DotEnv.config({ path: './config/config.env' });
-
-// Load logger settings
-DotEnv.config({ path: './config/logger.env' });
 
 const app = Express();
 
-// Dev loggin middleware
+// Dev logging middleware
 if (process.env.NODE_ENV === 'Development') {
   app.use(Morgan('dev'));
 }
@@ -28,7 +24,7 @@ const server = app.listen(
   )
 );
 
-if (process.env.REFRESH_DATABASE === 'True') {
+if (Config.RefreshDatabase) {
   Logger.info('Beginning to refresh the database with new data...');
   refreshAllBeastData();
   Logger.info('Finished refreshing the database with new data...');

@@ -1,6 +1,6 @@
 const Logger = require('./../utils/logger.js');
-const https = require('https');
-const logger = require('./../utils/logger.js');
+const HTTPS = require('https');
+const Config = require('./../config/GlobalConfig.js');
 
 class Area {
   constructor(areaName) {
@@ -65,16 +65,16 @@ function sleep(ms) {
 }
 
 function getBeastData(beastId) {
-  var options = {
+  const options = {
     host: 'secure.runescape.com',
     path: `/m=itemdb_rs/bestiary/beastData.json?beastid=${beastId}`,
   };
 
   Logger.debug(`Attempting to call https:\\\\${options.host + options.path}`);
 
-  https
+  HTTPS
     .request(options, (res) => {
-      var data = [];
+      let data = [];
 
       res.on('data', (chunkOfData) => {
         data.push(chunkOfData);
@@ -84,26 +84,25 @@ function getBeastData(beastId) {
         if (data === []) {
           return null;
         }
-        var parsedData = JSON.parse(data.join(''));
-        var beastData = new BeastData(parsedData);
-        return beastData;
+        const parsedData = JSON.parse(data.join(''));
+        return new BeastData(parsedData);
       });
     })
     .end();
 }
 
 function getBeastsByLetter(letter) {
-  var beasts = [];
+  let beasts = [];
 
-  var options = {
+  const options = {
     host: 'secure.runescape.com',
     path: `/m=itemdb_rs/bestiary/bestiaryNames.json?letter=${letter}`,
   };
 
   Logger.debug(`Attempting to call https:\\\\${options.host + options.path}`);
-  https
+  HTTPS
     .request(options, (res) => {
-      var data = [];
+      let data = [];
 
       res.on('data', (chunkOfData) => {
         data.push(chunkOfData);
@@ -119,10 +118,10 @@ function getBeastsByLetter(letter) {
   return beasts;
 }
 
-var bestiary = {
+const bestiary = {
   refreshAllBeastData: async () => {
-    var beasts = [];
-    var possibleStartingLetters = [
+    let beasts = [];
+    const possibleStartingLetters = [
       'A',
       'B',
       'C',
@@ -153,13 +152,17 @@ var bestiary = {
     for (let i = 0; i < possibleStartingLetters.length; i++) {
       const results = getBeastsByLetter(possibleStartingLetters[i]);
       for (let j = 0; j < results.length; j++) {
-        if ( Object.getOwnPropertyDescriptors(results)[j] ) {
+        if ( Object.getOwnPropertyDescriptors(results)[j] === 'npcs' ) {
           for (let k = 0; k < results[j].length; k++) {
+            console.log(`Adding data to "beasts": ${results[j][k]}`)
             beasts.push(results[j][k]);
           }
+        } else {
+          console.log(`Adding data to "beasts": ${results[j]}`)
+          beasts.push(results[j]);
         }
       }
-      await sleep(process.env.API_WAIT_TIME);
+      await sleep(Config.APIWaitTime);
     }
 
     console.log(JSON.stringify(beasts));
@@ -169,7 +172,7 @@ var bestiary = {
     //   if (beast.id != undefined) {
     //     var beastData = getBeastData(beast.id);
     //     Logger.debug(`Gathered beast data: ${beastData}`);
-    //     await sleep(process.env.API_WAIT_TIME);
+    //     await sleep(Config.APIWaitTime;
     //   }
     // }
   },
