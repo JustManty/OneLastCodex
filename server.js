@@ -3,7 +3,7 @@ const DotEnv = require('dotenv');
 const Morgan = require('morgan');
 const Logger = require('./utils/logger.js');
 const Config = require('./config/GlobalConfig.js')
-const { refreshAllBeastData } = require('./rs_api/bestiary.js');
+const Seeder = require('./database/seeder.js')
 
 // Load environment variables
 DotEnv.config({ path: './config/config.env' });
@@ -25,14 +25,13 @@ const server = app.listen(
 );
 
 if (Config.RefreshDatabase) {
-  Logger.info('Beginning to refresh the database with new data...');
-  refreshAllBeastData();
-  Logger.info('Finished refreshing the database with new data...');
+  Logger.info('Beginning to refresh the database with new data.');
+  Seeder.refreshDatabase().then(r => Logger.info('Finished refreshing the database with new data.'));
 }
 
 // Handle Unhandled Promise Rejections
 process.on('unhandledRejection', (err, promise) => {
-  Logger.error(`Error: ${err.message}`.red);
+  Logger.error(err.stack);
   // Close server and exit process
   server.close(() => process.exit(1));
 });

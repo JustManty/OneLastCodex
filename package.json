@@ -27,6 +27,7 @@
     "nodemon": "^2.0.4"
   },
   "dependencies": {
+    "axios": "^0.19.2",
     "chron": "^0.1.1",
     "colors": "^1.4.0",
     "dotenv": "^8.2.0",

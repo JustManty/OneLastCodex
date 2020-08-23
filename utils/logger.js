@@ -2,31 +2,37 @@ const Colors = require('colors/safe');
 const FS = require('fs');
 const Config = require('./../config/GlobalConfig.js')
 
-const stream = FS.createWriteStream('onelastcodex-log.txt', {flags: 'a'});
+let stream = FS.createWriteStream(`logs\\onelastcodex-log.${new Date().getFullYear()}.${new Date().getMonth()}.${new Date().getDay()}.txt`, {flags: 'a'});
 
 const logger = {
-
-  debug: (debug) => {
+  debug: (message) => {
     if (Config.Logging_Debug) {
-      let logMessage = new Date().toLocaleString() + '        Debug:    ' + debug;
+      let logMessage = new Date().toLocaleString() + '        Debug:    ' + message;
       console.log(Colors.italic.gray(logMessage));
       stream.write(logMessage + '\n');
     }
   },
-  info: (info) => {
-    let logMessage = new Date().toLocaleString() + '        Info:     ' + info;
+  info: (message) => {
+    let logMessage = new Date().toLocaleString() + '        Info:     ' + message;
     console.log(Colors.white(logMessage));
     stream.write(logMessage + ' \n');
   },
-  warning: (warning) => {
-    let logMessage = new Date().toLocaleString() + '        Warning:  ' + warning;
+  warning: (message) => {
+    let logMessage = new Date().toLocaleString() + '        Warning:  ' + message;
     console.log(Colors.yellow(logMessage));
     stream.write(logMessage + '\n');
   },
-  error: (error) => {
-    let logMessage = new Date().toLocaleString() + '        Error:    ' + error;
+  error: (message) => {
+    let logMessage = new Date().toLocaleString() + '        Error:    ' + message;
     console.log(Colors.bold.red(logMessage));
     stream.write(logMessage + '\n');
+  },
+  database: (message) => {
+    if(Config.Logging_Database) {
+      let logMessage = new Date().toLocaleString() + '        Database: ' + message;
+      console.log(Colors.italic.grey(logMessage));
+      stream.write(logMessage + '\n');
+    }
   },
 };
 
